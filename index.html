@@ -12,6 +12,8 @@
     <script src="code.getmdl.io/1.0.4/material.min.js"></script>
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="bower_components/x-webmidi/x-webmidirequestaccess.html">
+    <link rel="import" href="bower_components/webaudio-controls/webaudio-controls.html">
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="styles.css">
   </head>
@@ -60,14 +62,20 @@
         <span class="mdl-radio__label">Rainbow Fade</span>
       </label>
       </div>
-      <div id="stats">
+      <div id="stats" style="display:none;">
         <div id="batteryLevel"></div>
         <div id="blow"></div>
+      </div>
+      <div id="knob-area">
+        <webaudio-knob id="rgb-r" class="rgb-knob" src="images/knob-r.png" sprites="30" width="50" height="50" min="0" max="256"></webaudio-knob>
+        <webaudio-knob id="rgb-g" class="rgb-knob" src="images/knob-g.png" sprites="30" width="50" height="50" min="0" max="256"></webaudio-knob>
+        <webaudio-knob id="rgb-b" class="rgb-knob" src="images/knob-b.png" sprites="30" width="50" height="50" min="0" max="256"></webaudio-knob>
       </div>
       <div id="midiinput-area">
         <div>MIDI INPUT:</div> 
         <div id="midiinput-select"><x-webmidiinput id="input-port"></x-webmidiinput></div>
       </div>
+
     </div>
     <div id="view-source">
       <a href="https://github.com/WebBluetoothCG/demos/tree/gh-pages/playbulb-candle">
@@ -78,6 +86,7 @@
       <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
     </div>
 
+    <script src="tonegenerator.js"></script>
     <script src="webmidi.js"></script>
     <script src="playbulbCandle.js"></script>
     <script src="app.js"></script>

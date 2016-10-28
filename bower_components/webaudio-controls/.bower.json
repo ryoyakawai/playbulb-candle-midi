@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "polymer": "Polymer/polymer#master"
+  },
+  "name": "webaudio-controls",
+  "main": "webaudio-controls.html",
+  "author": "WebMusicDevelopersJP",
+  "description": "GUI parts library for Web application using [Polymer] WebComponents",
+  "license": "Apache2.0",
+  "homepage": "http://google.com/+agektmr",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "4dbe7ce21f",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "4dbe7ce21f490e191d5cc8a861aaa68f4e6f9eda"
+  },
+  "_source": "https://github.com/WebMusicDevelopersJP/webaudio-controls.git",
+  "_target": "*",
+  "_originalSource": "webaudio-controls",
+  "_direct": true
+}

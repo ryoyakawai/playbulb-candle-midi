@@ -117,3 +117,6 @@ body.connecting #loading {
 #midiinput-select {
   text-align:center;
 }
+#knob-area {
+  text-align:center;
+}

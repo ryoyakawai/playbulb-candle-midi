@@ -1,8 +1,30 @@
+document.querySelector("#rgb-r").addEventListener("change", updateColor);
+document.querySelector("#rgb-g").addEventListener("change", updateColor);
+document.querySelector("#rgb-b").addEventListener("change", updateColor);
+function updateColor(event) {
+    var target=event.target.id;
+    switch(target) {
+      case "rgb-r":
+        r=event.target.value;
+        break;
+      case "rgb-g":
+        g=event.target.value;
+        break;
+      case "rgb-b":
+        b=event.target.value;
+        break;
+    }
+    changeColor();
+}
+
+var tg=new ToneGenerator(new AudioContext());
+tg.init();
+
 var colorH=[0, 0, 0];
 var radioButtonId=["noEffect", "candleEffect", "flashing", "pulse", "rainbow", "rainbowFade"];
 var nowIdx=0;
-var factor={x:1.8, y:4};//290/127; // radius of color picker:290 
-var posX=300, posY=300;
+var factor={x:1.8, y:4};
+var pos={x:300, y:300};
 var center={x:300, y:300};
 var pi=Math.PI;
 window.addEventListener("midiin-event:input-port", function(event) {
@@ -11,6 +33,14 @@ window.addEventListener("midiin-event:input-port", function(event) {
     var ch=msg[0] & 0x0f;
     switch(msg[0] & 0xf0) {
       case 0x80:
+        console.log("noteOff", msg[0].toString(16), msg[1].toString(16), msg[2].toString(16));
+        var msg0=Array.apply(null, event.data);
+        for(var i=0; i<msg.length; i++) {
+            msg0[i]=msg[i].toString(16);
+        }
+        msg0.unshift("midi");
+        console.log(msg0);
+        tg.que.Push(msg0);
         break;
       case 0x90:
         console.log("noteOn", msg[0].toString(16), msg[1].toString(16), msg[2].toString(16));
@@ -20,9 +50,16 @@ window.addEventListener("midiin-event:input-port", function(event) {
             radius=40;
         }
         radius=190*radius/127;
-        posX=parseInt(center.x+radius*Math.sin(angle));
-        posY=parseInt(center.y+radius*Math.cos(angle));
-        drawPos(posX, posY);
+        pos.x=parseInt(center.x+radius*Math.sin(angle));
+        pos.y=parseInt(center.y+radius*Math.cos(angle));
+        drawPos(pos.x, pos.y);
+        var msg0=Array.apply(null, event.data);
+        for(var i=0; i<msg.length; i++) {
+            msg0[i]=msg[i].toString(16);
+        }
+        msg0.unshift("midi");
+        console.log(msg0);
+        tg.que.Push(msg0);
         break;
       case 0xb0:
         if(msg[1]==20){
@@ -32,35 +69,24 @@ window.addEventListener("midiin-event:input-port", function(event) {
                 var element=document.querySelector("#"+radioButtonId[idx]);
                 event.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
                 element.dispatchEvent(event);  
-                changeColorMidi();
                 nowIdx=idx;
             }
         } else if(msg[1]==18 || msg[1]==19){
             var val=parseInt(parseInt(msg[2],16));
             switch(msg[1]) {
               case 18:
-                posX=factor.x*val;
-                if(posX<10) posY=10;
-                if(posX>590) posY=590;
+                pos.x=factor.x*val;
+                if(pos.x<10) pos.x=10;
+                if(pos.y>590) pos.x=590;
                 break;
               case 19:
-                posY=factor.y*val;
-                if(posY<10) posY=10;
-                if(posY>590) posY=590;
+                pos.y=factor.y*val;
+                if(pos.y<10) pos.y=10;
+                if(pos.y>590) pos.y=590;
                 break;
             }
-/*
-            var a=Math.sqrt(Math.pow(posX-center.x, 2)+Math.pow(posY-center.y, 2));
-            if(a>290) {
-                var ty=290*(posY-center.y)/(posX-center.x)+center.y;
-                var tx=Math.sqrt(Math.pow(290, 2)-Math.pow(ty-center.y, 2))+center.x;
-                //posY=parseInt(ty);
-                //posX=parseInt(tx);
-                console.log("[outside]", posX, posY);
-            }
-*/
-            if((posX>10 && posX<590) && (posY>10 && posY<590)) {
-                drawPos(parseInt(posX), parseInt(posY));
+            if((pos.x>10 && pos.x<590) && (pos.y>10 && pos.y<590)) {
+                drawPos(parseInt(pos.x), parseInt(pos.y));
             } else {
                 changeColor();
             }
@@ -68,8 +94,7 @@ window.addEventListener("midiin-event:input-port", function(event) {
             if(msg[1]==24) r=2*msg[2];
             if(msg[1]==25) g=2*msg[2];
             if(msg[1]==26) b=2*msg[2];
-            //changeColor();
-            //drawMidi();
+            updateKnob();
             changeColor();
         }
         
@@ -78,20 +103,7 @@ window.addEventListener("midiin-event:input-port", function(event) {
     
 });
 
-function changeColorMidi() {
-/*
-    r=colorH[0];
-    g=colorH[1];
-    b=colorH[2];
-*/
-    //console.log(r, g, b);
-    changeColor();
-    //drawMidi();
-}
-
 function drawPos(x, y) {
-    console.log("[Position] ", x, y);
-
     var canvas = document.querySelector('canvas');
     var context = canvas.getContext('2d');
 
@@ -112,7 +124,8 @@ function drawPos(x, y) {
         r = data[((canvas.width * y) + x) * 4];
         g = data[((canvas.width * y) + x) * 4 + 1];
         b = data[((canvas.width * y) + x) * 4 + 2];
-        
+
+        updateKnob();
         changeColor();
 
         context.beginPath();
@@ -124,6 +137,11 @@ function drawPos(x, y) {
     }
 
 };
+function updateKnob(){
+    document.querySelector("#rgb-r").value=r;
+    document.querySelector("#rgb-g").value=g;
+    document.querySelector("#rgb-b").value=b;
+}
 
 function drawMidi() {
     var canvas = document.querySelector('canvas');
