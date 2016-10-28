@@ -39,7 +39,6 @@ window.addEventListener("midiin-event:input-port", function(event) {
             msg0[i]=msg[i].toString(16);
         }
         msg0.unshift("midi");
-        console.log(msg0);
         tg.que.Push(msg0);
         break;
       case 0x90:
@@ -58,7 +57,6 @@ window.addEventListener("midiin-event:input-port", function(event) {
             msg0[i]=msg[i].toString(16);
         }
         msg0.unshift("midi");
-        console.log(msg0);
         tg.que.Push(msg0);
         break;
       case 0xb0:
